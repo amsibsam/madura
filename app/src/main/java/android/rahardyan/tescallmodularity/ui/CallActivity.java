@@ -12,6 +12,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import io.agora.rtc.RtcEngine;
+
 public class CallActivity extends AppCompatActivity implements CallEvent {
     private static final String CALL_AS_KEY = "call_as";
 
@@ -22,7 +24,6 @@ public class CallActivity extends AppCompatActivity implements CallEvent {
     public static Intent generateIntent(Context context, CallLibraryHelper.CallAs callAs){
         Intent intent = new Intent(context, CallActivity.class);
         intent.putExtra(CALL_AS_KEY, callAs.name());
-
         return intent;
     }
 
