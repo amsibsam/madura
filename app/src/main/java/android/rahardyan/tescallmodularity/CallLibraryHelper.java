@@ -2,11 +2,9 @@ package android.rahardyan.tescallmodularity;
 
 import android.app.Activity;
 import android.content.Context;
+import android.rahardyan.tescallmodularity.AgoraSampleReferences.threadhelper.WorkerThread;
 import android.rahardyan.tescallmodularity.CallLibrary.AgoraExample;
-import android.rahardyan.tescallmodularity.CallLibrary.CallLibrary;
-import android.rahardyan.tescallmodularity.CallLibrary.TokboxExample;
 import android.rahardyan.tescallmodularity.event.CallEvent;
-import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 
 /**
@@ -15,6 +13,7 @@ import android.widget.RelativeLayout;
 
 public class CallLibraryHelper{
     private static AgoraExample callLibrary;
+    private static WorkerThread mWorkerThread;
 
     public CallLibraryHelper() {
     }
@@ -37,6 +36,29 @@ public class CallLibraryHelper{
 
     public static void endCall(){
         callLibrary.endCall();
+    }
+
+    public static synchronized void initWorkerThread(Context context) {
+        if (mWorkerThread == null) {
+            mWorkerThread = new WorkerThread(context);
+            mWorkerThread.start();
+
+            mWorkerThread.waitForReady();
+        }
+    }
+
+    public static synchronized WorkerThread getWorkerThread() {
+        return mWorkerThread;
+    }
+
+    public static synchronized void doInitWorkerThread() {
+        mWorkerThread.exit();
+        try {
+            mWorkerThread.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        mWorkerThread = null;
     }
 
     public enum CallAs{

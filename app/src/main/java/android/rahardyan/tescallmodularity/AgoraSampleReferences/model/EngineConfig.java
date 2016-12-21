@@ -1,4 +1,4 @@
-package android.rahardyan.tescallmodularity;
+package android.rahardyan.tescallmodularity.AgoraSampleReferences.model;
 
 public class EngineConfig {
     public int mVideoProfile;
@@ -11,6 +11,6 @@ public class EngineConfig {
         mChannel = null;
     }
 
-    EngineConfig() {
+    public EngineConfig() {
     }
 }

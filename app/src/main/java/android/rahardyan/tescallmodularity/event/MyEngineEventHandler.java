@@ -1,6 +1,8 @@
-package android.rahardyan.tescallmodularity;
+package android.rahardyan.tescallmodularity.event;
 
 import android.content.Context;
+import android.rahardyan.tescallmodularity.AgoraSampleReferences.model.ConstantApp;
+import android.rahardyan.tescallmodularity.AgoraSampleReferences.model.EngineConfig;
 import android.util.Log;
 
 import java.util.Arrays;
@@ -30,7 +32,7 @@ public class MyEngineEventHandler {
         this.mEventHandlerList.remove(handler);
     }
 
-    final IRtcEngineEventHandler mRtcEventHandler = new IRtcEngineEventHandler() {
+    public final IRtcEngineEventHandler mRtcEventHandler = new IRtcEngineEventHandler() {
 
         @Override
         public void onFirstRemoteVideoDecoded(int uid, int width, int height, int elapsed) {

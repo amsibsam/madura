@@ -1,4 +1,4 @@
-package android.rahardyan.tescallmodularity;
+package android.rahardyan.tescallmodularity.AgoraSampleReferences.model;
 
 import io.agora.rtc.Constants;
 import io.agora.rtc.IRtcEngineEventHandler;

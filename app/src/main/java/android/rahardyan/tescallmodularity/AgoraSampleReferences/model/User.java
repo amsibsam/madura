@@ -1,4 +1,4 @@
-package android.rahardyan.tescallmodularity.model;
+package android.rahardyan.tescallmodularity.AgoraSampleReferences.model;
 
 public class User {
     public User(int uid, String name) {

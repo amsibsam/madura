@@ -1,4 +1,4 @@
-package android.rahardyan.tescallmodularity.headset.bluetooth;
+package android.rahardyan.tescallmodularity.AgoraSampleReferences.headset.bluetooth;
 
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothHeadset;
@@ -6,7 +6,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.media.AudioManager;
-import android.rahardyan.tescallmodularity.headset.HeadsetPlugManager;
+import android.rahardyan.tescallmodularity.AgoraSampleReferences.headset.HeadsetPlugManager;
 import android.util.Log;
 
 public class BluetoothHeadsetBroadcastReceiver extends BroadcastReceiver {

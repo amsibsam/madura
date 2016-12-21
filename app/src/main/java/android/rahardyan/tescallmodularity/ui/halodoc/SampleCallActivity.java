@@ -1,7 +1,7 @@
-package android.rahardyan.tescallmodularity.ui;
+package android.rahardyan.tescallmodularity.ui.halodoc;
 
 import android.rahardyan.tescallmodularity.CallLibraryHelper;
-import android.rahardyan.tescallmodularity.ConstantApp;
+import android.rahardyan.tescallmodularity.AgoraSampleReferences.model.ConstantApp;
 import android.rahardyan.tescallmodularity.R;
 import android.rahardyan.tescallmodularity.event.CallEvent;
 import android.support.v7.app.AppCompatActivity;

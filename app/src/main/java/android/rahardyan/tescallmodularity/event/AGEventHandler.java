@@ -1,4 +1,4 @@
-package android.rahardyan.tescallmodularity;
+package android.rahardyan.tescallmodularity.event;
 
 public interface AGEventHandler {
     void onFirstRemoteVideoDecoded(int uid, int width, int height, int elapsed);

@@ -3,45 +3,25 @@ package android.rahardyan.tescallmodularity.CallLibrary;
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.os.AsyncTask;
-import android.os.Handler;
 import android.preference.PreferenceManager;
-import android.rahardyan.tescallmodularity.AGEventHandler;
-import android.rahardyan.tescallmodularity.ClassHelper;
-import android.rahardyan.tescallmodularity.Constant;
-import android.rahardyan.tescallmodularity.ConstantApp;
-import android.rahardyan.tescallmodularity.EngineConfig;
-import android.rahardyan.tescallmodularity.MyEngineEventHandler;
-import android.rahardyan.tescallmodularity.R;
-import android.rahardyan.tescallmodularity.UserStatusData;
-import android.rahardyan.tescallmodularity.VideoInfoData;
-import android.rahardyan.tescallmodularity.WorkerThread;
+import android.rahardyan.tescallmodularity.CallLibraryHelper;
+import android.rahardyan.tescallmodularity.event.AGEventHandler;
+import android.rahardyan.tescallmodularity.AgoraSampleReferences.model.ConstantApp;
+import android.rahardyan.tescallmodularity.AgoraSampleReferences.model.EngineConfig;
+import android.rahardyan.tescallmodularity.event.MyEngineEventHandler;
+import android.rahardyan.tescallmodularity.AgoraSampleReferences.threadhelper.WorkerThread;
 import android.rahardyan.tescallmodularity.event.CallEvent;
-import android.rahardyan.tescallmodularity.ui.GridVideoViewContainer;
-import android.rahardyan.tescallmodularity.ui.RtlLinearLayoutManager;
-import android.rahardyan.tescallmodularity.ui.SmallVideoViewAdapter;
-import android.rahardyan.tescallmodularity.ui.SmallVideoViewDecoration;
-import android.rahardyan.tescallmodularity.ui.VideoViewEventListener;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.SurfaceView;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.ViewStub;
-import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 
 import java.lang.ref.SoftReference;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import io.agora.rtc.IRtcEngineEventHandler;
 import io.agora.rtc.RtcEngine;
 import io.agora.rtc.video.VideoCanvas;
-
-import static com.opentok.client.DeviceInfo.getApplicationContext;
 
 /**
  * Created by rahardyan on 17/12/16.
@@ -67,12 +47,10 @@ public class AgoraExample extends CallLibrary implements AGEventHandler {
     public static final int LAYOUT_TYPE_DEFAULT = 0;
     public static final int LAYOUT_TYPE_SMALL = 1;
 
-    private GridVideoViewContainer mGridVideoViewContainer;
-
 
     public AgoraExample (Context context) {
         mContext = context;
-        ClassHelper.initWorkerThread(context);
+        CallLibraryHelper.initWorkerThread(context);
         event().addEventHandler(this);
     }
 
@@ -111,19 +89,19 @@ public class AgoraExample extends CallLibrary implements AGEventHandler {
     }
 
     public RtcEngine rtcEngine() {
-        return ClassHelper.getWorkerThread().getRtcEngine();
+        return CallLibraryHelper.getWorkerThread().getRtcEngine();
     }
 
     public final WorkerThread worker() {
-        return ClassHelper.getWorkerThread();
+        return CallLibraryHelper.getWorkerThread();
     }
 
     public final EngineConfig config() {
-        return ClassHelper.getWorkerThread().getEngineConfig();
+        return CallLibraryHelper.getWorkerThread().getEngineConfig();
     }
 
     protected final MyEngineEventHandler event() {
-        return ClassHelper.getWorkerThread().eventHandler();
+        return CallLibraryHelper.getWorkerThread().eventHandler();
     }
 
     @Override
@@ -174,16 +152,6 @@ public class AgoraExample extends CallLibrary implements AGEventHandler {
 
     }
 
-    private SmallVideoViewAdapter mSmallVideoViewAdapter;
-
-    private void switchToDefaultVideoView() {
-        if (mSmallVideoViewDock != null) {
-            mSmallVideoViewDock.setVisibility(View.GONE);
-        }
-        mGridVideoViewContainer.initViewContainer(mActivity, config().mUid, mUidsList);
-
-        mLayoutType = LAYOUT_TYPE_DEFAULT;
-    }
 
 
 
@@ -261,125 +229,12 @@ public class AgoraExample extends CallLibrary implements AGEventHandler {
         doRenderRemoteUi(uid);
     }
 
-    private void doRemoveRemoteUi(final int uid) {
-
-
-        Object target = mUidsList.remove(uid);
-        if (target == null) {
-            return;
-        }
-
-        int bigBgUid = -1;
-        if (mSmallVideoViewAdapter != null) {
-            bigBgUid = mSmallVideoViewAdapter.getExceptedUid();
-        }
-
-        Log.d("amsibsam", "doRemoveRemoteUi " + (uid & 0xFFFFFFFFL) + " " + (bigBgUid & 0xFFFFFFFFL) + " " + mLayoutType);
-
-        if (mLayoutType == LAYOUT_TYPE_DEFAULT || uid == bigBgUid) {
-            switchToDefaultVideoView();
-        } else {
-//            switchToSmallVideoView(bigBgUid);
-        }
-    }
-
     @Override
     public void onExtraCallback(int type, Object... data) {
-        doHandleExtraCallback(type, data);
+
     }
 
-    private void doHandleExtraCallback(int type, Object... data) {
-        int peerUid;
-        boolean muted;
 
-        switch (type) {
-            case AGEventHandler.EVENT_TYPE_ON_USER_AUDIO_MUTED:
-                peerUid = (Integer) data[0];
-                muted = (boolean) data[1];
-
-                if (mLayoutType == LAYOUT_TYPE_DEFAULT) {
-                    HashMap<Integer, Integer> status = new HashMap<>();
-                    status.put(peerUid, muted ? UserStatusData.AUDIO_MUTED : UserStatusData.DEFAULT_STATUS);
-                    mGridVideoViewContainer.notifyUiChanged(mUidsList, config().mUid, status, null);
-                }
-
-                break;
-
-            case AGEventHandler.EVENT_TYPE_ON_USER_VIDEO_MUTED:
-                peerUid = (Integer) data[0];
-                muted = (boolean) data[1];
-
-                doHideTargetView(peerUid, muted);
-
-                break;
-
-            case AGEventHandler.EVENT_TYPE_ON_USER_VIDEO_STATS:
-                IRtcEngineEventHandler.RemoteVideoStats stats = (IRtcEngineEventHandler.RemoteVideoStats) data[0];
-
-                if (Constant.SHOW_VIDEO_INFO) {
-                    if (mLayoutType == LAYOUT_TYPE_DEFAULT) {
-                        mGridVideoViewContainer.addVideoInfo(stats.uid, new VideoInfoData(stats.width, stats.height, stats.delay, stats.receivedFrameRate, stats.receivedBitrate));
-                        int uid = config().mUid;
-                        int profileIndex = getVideoProfileIndex();
-                        String resolution = mContext.getResources().getStringArray(R.array.string_array_resolutions)[profileIndex];
-                        String fps = mContext.getResources().getStringArray(R.array.string_array_frame_rate)[profileIndex];
-                        String bitrate = mContext.getResources().getStringArray(R.array.string_array_bit_rate)[profileIndex];
-
-                        String[] rwh = resolution.split("x");
-                        int width = Integer.valueOf(rwh[0]);
-                        int height = Integer.valueOf(rwh[1]);
-
-                        mGridVideoViewContainer.addVideoInfo(uid, new VideoInfoData(width > height ? width : height,
-                                width > height ? height : width,
-                                0, Integer.valueOf(fps), Integer.valueOf(bitrate)));
-                    }
-                } else {
-                    mGridVideoViewContainer.cleanVideoInfo();
-                }
-
-                break;
-
-            case AGEventHandler.EVENT_TYPE_ON_SPEAKER_STATS:
-                IRtcEngineEventHandler.AudioVolumeInfo[] infos = (IRtcEngineEventHandler.AudioVolumeInfo[]) data[0];
-
-                if (infos.length == 1 && infos[0].uid == 0) { // local guy, ignore it
-                    break;
-                }
-
-                if (mLayoutType == LAYOUT_TYPE_DEFAULT) {
-                    HashMap<Integer, Integer> volume = new HashMap<>();
-
-                    for (IRtcEngineEventHandler.AudioVolumeInfo each : infos) {
-                        peerUid = each.uid;
-                        int peerVolume = each.volume;
-
-                        if (peerUid == 0) {
-                            continue;
-                        }
-                        volume.put(peerUid, peerVolume);
-                    }
-                    mGridVideoViewContainer.notifyUiChanged(mUidsList, config().mUid, null, volume);
-                }
-
-                break;
-        }
-    }
-
-    private void doHideTargetView(int targetUid, boolean hide) {
-        HashMap<Integer, Integer> status = new HashMap<>();
-        status.put(targetUid, hide ? UserStatusData.VIDEO_MUTED : UserStatusData.DEFAULT_STATUS);
-        if (mLayoutType == LAYOUT_TYPE_DEFAULT) {
-            mGridVideoViewContainer.notifyUiChanged(mUidsList, targetUid, status, null);
-        } else if (mLayoutType == LAYOUT_TYPE_SMALL) {
-            UserStatusData bigBgUser = mGridVideoViewContainer.getItem(0);
-            if (bigBgUser.mUid == targetUid) { // big background is target view
-                mGridVideoViewContainer.notifyUiChanged(mUidsList, targetUid, status, null);
-            } else { // find target view in small video view list
-                Log.w("AgoraCallActivity", "SmallVideoViewAdapter call notifyUiChanged " + mUidsList + " " + (bigBgUser.mUid & 0xFFFFFFFFL) + " taget: " + (targetUid & 0xFFFFFFFFL) + "==" + targetUid + " " + status);
-                mSmallVideoViewAdapter.notifyUiChanged(mUidsList, bigBgUser.mUid, status, null);
-            }
-        }
-    }
 
     private int getVideoProfileIndex() {
         SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(mContext);
