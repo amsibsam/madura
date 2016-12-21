@@ -4,7 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
-import android.rahardyan.tescallmodularity.CallLibraryHelper;
+import android.rahardyan.tescallmodularity.Madura;
 import android.rahardyan.tescallmodularity.event.AGEventHandler;
 import android.rahardyan.tescallmodularity.AgoraSampleReferences.model.ConstantApp;
 import android.rahardyan.tescallmodularity.AgoraSampleReferences.model.EngineConfig;
@@ -13,11 +13,9 @@ import android.rahardyan.tescallmodularity.AgoraSampleReferences.threadhelper.Wo
 import android.rahardyan.tescallmodularity.event.CallEvent;
 import android.util.Log;
 import android.view.SurfaceView;
-import android.view.View;
 import android.widget.RelativeLayout;
 
 import java.lang.ref.SoftReference;
-import java.util.ArrayList;
 import java.util.HashMap;
 
 import io.agora.rtc.RtcEngine;
@@ -47,7 +45,7 @@ public class AgoraExample extends CallLibrary implements AGEventHandler {
 
     public AgoraExample (Context context) {
         mContext = context;
-        CallLibraryHelper.initWorkerThread(context);
+        Madura.initWorkerThread(context);
         event().addEventHandler(this);
     }
 
@@ -78,19 +76,19 @@ public class AgoraExample extends CallLibrary implements AGEventHandler {
     }
 
     public RtcEngine rtcEngine() {
-        return CallLibraryHelper.getWorkerThread().getRtcEngine();
+        return Madura.getWorkerThread().getRtcEngine();
     }
 
     public final WorkerThread worker() {
-        return CallLibraryHelper.getWorkerThread();
+        return Madura.getWorkerThread();
     }
 
     public final EngineConfig config() {
-        return CallLibraryHelper.getWorkerThread().getEngineConfig();
+        return Madura.getWorkerThread().getEngineConfig();
     }
 
     protected final MyEngineEventHandler event() {
-        return CallLibraryHelper.getWorkerThread().eventHandler();
+        return Madura.getWorkerThread().eventHandler();
     }
 
     @Override
@@ -125,10 +123,8 @@ public class AgoraExample extends CallLibrary implements AGEventHandler {
                 remoteVideo = RtcEngine.CreateRendererView(mActivity);
                 mUidsList.put(uid, new SoftReference<>(remoteVideo));
 
-                boolean useDefaultLayout = mLayoutType == LAYOUT_TYPE_DEFAULT && mUidsList.size() != 2;
-
                 remoteVideo.setZOrderOnTop(false);
-                remoteVideo.setZOrderMediaOverlay(true);
+                remoteVideo.setZOrderMediaOverlay(false);
 
                 rtcEngine().setupRemoteVideo(new VideoCanvas(remoteVideo, VideoCanvas.RENDER_MODE_HIDDEN, uid));
 
@@ -141,7 +137,15 @@ public class AgoraExample extends CallLibrary implements AGEventHandler {
 
     }
 
+    public void muteAudio() {
+        Log.i("AgoraCallActivity", " " + mUidsList.size()  + " audio_status: " + mAudioMuted);
+        if (mUidsList.size() == 0) {
+            return;
+        }
 
+        RtcEngine rtcEngine = rtcEngine();
+        rtcEngine.muteLocalAudioStream(mAudioMuted = !mAudioMuted);
+    }
 
 
     private void requestRemoteStreamType(final int currentHostCount) {

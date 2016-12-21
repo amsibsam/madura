@@ -1,6 +1,6 @@
 package android.rahardyan.tescallmodularity.ui.halodoc;
 
-import android.rahardyan.tescallmodularity.CallLibraryHelper;
+import android.rahardyan.tescallmodularity.Madura;
 import android.rahardyan.tescallmodularity.AgoraSampleReferences.model.ConstantApp;
 import android.rahardyan.tescallmodularity.R;
 import android.rahardyan.tescallmodularity.event.CallEvent;
@@ -23,14 +23,21 @@ public class SampleCallActivity extends AppCompatActivity implements CallEvent {
 
         rootContainer = (RelativeLayout) findViewById(R.id.root_container);
         smallVideoView = (RelativeLayout) findViewById(R.id.small_video_container);
-        CallLibraryHelper.setListener(this);
-        CallLibraryHelper.setRootLayout(this, rootContainer, smallVideoView, encryptionKey, encryptionMode);
-        CallLibraryHelper.startCall(target);
+        Madura.setListener(this);
+        Madura.setRootLayout(this, rootContainer, smallVideoView, encryptionKey, encryptionMode);
+        Madura.startCall(target);
 
         findViewById(R.id.bottom_action_end_call).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                CallLibraryHelper.endCall();
+                Madura.endCall();
+            }
+        });
+
+        findViewById(R.id.btn_mute).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Madura.muteAudio();
             }
         });
     }

@@ -12,6 +12,6 @@ public class TesCallApplication extends Application {
     public void onCreate() {
         super.onCreate();
 
-        CallLibraryHelper.init(getBaseContext());
+        Madura.init(getBaseContext());
     }
 }

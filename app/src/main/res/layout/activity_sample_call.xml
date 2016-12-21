@@ -56,11 +56,11 @@
                         android:src="@drawable/btn_switch_camera"
                         android:onClick="onCustomizedFunctionClicked" />
                     <ImageView
+                        android:id="@+id/btn_mute"
                         android:layout_width="54dp"
                         android:layout_height="match_parent"
                         android:scaleType="center"
-                        android:src="@drawable/btn_mute"
-                        android:onClick="onVoiceMuteClicked" />
+                        android:src="@drawable/btn_mute" />
                 </LinearLayout>
             </RelativeLayout>
         </LinearLayout>

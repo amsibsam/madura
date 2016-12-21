@@ -11,11 +11,11 @@ import android.widget.RelativeLayout;
  * Created by rahardyan on 17/12/16.
  */
 
-public class CallLibraryHelper{
+public class Madura {
     private static AgoraExample callLibrary;
     private static WorkerThread mWorkerThread;
 
-    public CallLibraryHelper() {
+    public Madura() {
     }
 
     public static void init(Context context) {
@@ -36,6 +36,10 @@ public class CallLibraryHelper{
 
     public static void endCall(){
         callLibrary.endCall();
+    }
+
+    public static void muteAudio() {
+        callLibrary.muteAudio();
     }
 
     public static synchronized void initWorkerThread(Context context) {
