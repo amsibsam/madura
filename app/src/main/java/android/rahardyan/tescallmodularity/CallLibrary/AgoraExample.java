@@ -49,6 +49,7 @@ import static com.opentok.client.DeviceInfo.getApplicationContext;
 
 public class AgoraExample extends CallLibrary implements AGEventHandler {
     private RelativeLayout rootContainer;
+    private RelativeLayout smallVideoView;
 
     private CallEvent listener;
     private Context mContext;
@@ -79,10 +80,11 @@ public class AgoraExample extends CallLibrary implements AGEventHandler {
         this.listener = listener;
     }
 
-    public void setRootContainer(Activity activity, RelativeLayout container, String encryptionKey, String encryptionMode){
+    public void setRootContainer(Activity activity, RelativeLayout container, RelativeLayout smallVideo, String encryptionKey, String encryptionMode){
         mActivity = activity;
         doConfigEngine(encryptionKey, encryptionMode);
         rootContainer = container;
+        smallVideoView = smallVideo;
 //        mGridVideoViewContainer = new GridVideoViewContainer(mContext);
 //        mGridVideoViewContainer.setLayoutParams(new
 //                RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
@@ -163,19 +165,9 @@ public class AgoraExample extends CallLibrary implements AGEventHandler {
 
                 rtcEngine().setupRemoteVideo(new VideoCanvas(remoteVideo, VideoCanvas.RENDER_MODE_HIDDEN, uid));
 
-                RelativeLayout.LayoutParams localVideoParams = new RelativeLayout.LayoutParams(300, 300);
-                localVideoParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT, RelativeLayout.TRUE);
-                localVideoParams.setMargins(20,20,20,20);
-
-                RelativeLayout.LayoutParams remoteVideoParams = new RelativeLayout
-                        .LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-                remoteVideoParams.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE);
-
-                localVideo.setLayoutParams(localVideoParams);
-                remoteVideo.setLayoutParams(remoteVideoParams);
                 rootContainer.removeAllViews();
-//                rootContainer.addView(remoteVideo);
-                rootContainer.addView(localVideo);
+
+                smallVideoView.addView(localVideo);
             }
         });
 

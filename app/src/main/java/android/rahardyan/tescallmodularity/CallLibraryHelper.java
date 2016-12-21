@@ -27,8 +27,8 @@ public class CallLibraryHelper{
         callLibrary.setListener(listener);
     }
 
-    public static void setRootLayout(Activity activity, RelativeLayout rootLayout, String key, String mode){
-        callLibrary.setRootContainer(activity, rootLayout, key, mode);
+    public static void setRootLayout(Activity activity, RelativeLayout rootLayout, RelativeLayout smallVideo, String key, String mode){
+        callLibrary.setRootContainer(activity, rootLayout, smallVideo, key, mode);
     }
 
     public static void startCall(String target){
