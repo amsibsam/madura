@@ -12,11 +12,6 @@
     android:gravity="center"
     tools:context="android.rahardyan.tescallmodularity.ui.halodoc.MainActivity">
     <Button
-        android:id="@+id/btn_call"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Start Call Agora" />
-    <Button
         android:id="@+id/test_agora"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

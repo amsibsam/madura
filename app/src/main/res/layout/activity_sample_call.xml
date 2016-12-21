@@ -26,7 +26,6 @@
             android:layout_alignParentBottom="true">
             <RelativeLayout
                 android:id="@+id/small_video_container"
-                android:background="@color/colorAccent"
                 android:layout_width="100dp"
                 android:layout_height="100dp"
                 android:layout_margin="10dp">

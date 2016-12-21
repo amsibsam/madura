@@ -35,8 +35,6 @@ public class AgoraExample extends CallLibrary implements AGEventHandler {
     private Context mContext;
     private String mTarget;
     private final HashMap<Integer, SoftReference<SurfaceView>> mUidsList = new HashMap<>();
-    private RelativeLayout mSmallVideoViewDock;
-    private ArrayList<View> childs = new ArrayList<>();
     private Activity mActivity;
     SurfaceView localVideo;
     SurfaceView remoteVideo;
@@ -45,7 +43,6 @@ public class AgoraExample extends CallLibrary implements AGEventHandler {
 
     public int mLayoutType = LAYOUT_TYPE_DEFAULT;
     public static final int LAYOUT_TYPE_DEFAULT = 0;
-    public static final int LAYOUT_TYPE_SMALL = 1;
 
 
     public AgoraExample (Context context) {
@@ -63,19 +60,12 @@ public class AgoraExample extends CallLibrary implements AGEventHandler {
         doConfigEngine(encryptionKey, encryptionMode);
         rootContainer = container;
         smallVideoView = smallVideo;
-//        mGridVideoViewContainer = new GridVideoViewContainer(mContext);
-//        mGridVideoViewContainer.setLayoutParams(new
-//                RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-//                ViewGroup.LayoutParams.MATCH_PARENT));
-//        mGridVideoViewContainer.setBackgroundColor(mContext.getResources().getColor(R.color.colorAccent));
+
         localVideo = RtcEngine.CreateRendererView(mContext);
         rtcEngine().setupLocalVideo(new VideoCanvas(localVideo, VideoCanvas.RENDER_MODE_HIDDEN, 0));
-        localVideo.setZOrderOnTop(false);
-        localVideo.setZOrderMediaOverlay(false);
-        mUidsList.put(0, new SoftReference<>(localVideo)); // get first surface view
+        localVideo.setZOrderOnTop(true);
+        localVideo.setZOrderMediaOverlay(true);
 
-//        mGridVideoViewContainer.initViewContainer(mActivity, 0, mUidsList); // first is now full view
-//        rootContainer.addView(mGridVideoViewContainer);
         rootContainer.addView(localVideo);
         worker().preview(true, localVideo, 0);
 
@@ -84,7 +74,6 @@ public class AgoraExample extends CallLibrary implements AGEventHandler {
 
     private void doConfigEngine(String encryptionKey, String encryptionMode) {
         int vProfile = ConstantApp.VIDEO_PROFILES[getVideoProfileIndex()];
-
         worker().configEngine(vProfile, encryptionKey, encryptionMode);
     }
 
@@ -138,8 +127,8 @@ public class AgoraExample extends CallLibrary implements AGEventHandler {
 
                 boolean useDefaultLayout = mLayoutType == LAYOUT_TYPE_DEFAULT && mUidsList.size() != 2;
 
-                remoteVideo.setZOrderOnTop(!useDefaultLayout);
-                remoteVideo.setZOrderMediaOverlay(!useDefaultLayout);
+                remoteVideo.setZOrderOnTop(false);
+                remoteVideo.setZOrderMediaOverlay(true);
 
                 rtcEngine().setupRemoteVideo(new VideoCanvas(remoteVideo, VideoCanvas.RENDER_MODE_HIDDEN, uid));
 
@@ -158,53 +147,6 @@ public class AgoraExample extends CallLibrary implements AGEventHandler {
     private void requestRemoteStreamType(final int currentHostCount) {
         Log.d("amsibsam", "requestRemoteStreamType " + currentHostCount);
     }
-
-//    private void bindToSmallVideoView(int exceptUid) {
-//        if (mSmallVideoViewDock == null) {
-//            ViewStub stub = new ViewStub(mContext);
-//            stub.setInflatedId(R.id.small_video_view_container);
-//            stub.setLayoutResource(R.layout.small_video_view_dock);
-//            mSmallVideoViewDock = (RelativeLayout) stub.inflate();
-//        }
-//
-//        boolean twoWayVideoCall = mUidsList.size() == 2;
-//
-//        RecyclerView recycler = (RecyclerView) findViewById(R.id.small_video_view_container);
-//
-//        boolean create = false;
-//
-//        if (mSmallVideoViewAdapter == null) {
-//            create = true;
-//            mSmallVideoViewAdapter = new SmallVideoViewAdapter(mContext, config().mUid, exceptUid, mUidsList, new VideoViewEventListener() {
-//                @Override
-//                public void onItemDoubleClick(View v, Object item) {
-//                    switchToDefaultVideoView();
-//                }
-//            });
-//            mSmallVideoViewAdapter.setHasStableIds(true);
-//        }
-//        recycler.setHasFixedSize(true);
-//
-//        Log.d("amsibsam", "bindToSmallVideoView " + twoWayVideoCall + " " + (exceptUid & 0xFFFFFFFFL));
-//
-//        if (twoWayVideoCall) {
-//            recycler.setLayoutManager(new RtlLinearLayoutManager(mContext, RtlLinearLayoutManager.HORIZONTAL, false));
-//        } else {
-//            recycler.setLayoutManager(new LinearLayoutManager(mContext, LinearLayoutManager.HORIZONTAL, false));
-//        }
-//        recycler.addItemDecoration(new SmallVideoViewDecoration());
-//        recycler.setAdapter(mSmallVideoViewAdapter);
-//
-//        recycler.setDrawingCacheEnabled(true);
-//        recycler.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_AUTO);
-//
-//        if (!create) {
-//            mSmallVideoViewAdapter.setLocalUid(config().mUid);
-//            mSmallVideoViewAdapter.notifyUiChanged(mUidsList, exceptUid, null, null);
-//        }
-//        recycler.setVisibility(View.VISIBLE);
-//        mSmallVideoViewDock.setVisibility(View.VISIBLE);
-//    }
 
     @Override
     public void onJoinChannelSuccess(String channel, int uid, int elapsed) {
