@@ -101,6 +101,7 @@ public class AgoraExample extends CallLibrary implements AGEventHandler {
         rootContainer.addView(localVideo);
         worker().preview(true, localVideo, 0);
 
+
         Log.d("amsibsam", "root set");
     }
 
