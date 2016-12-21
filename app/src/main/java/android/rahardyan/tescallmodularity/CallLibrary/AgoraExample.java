@@ -101,7 +101,6 @@ public class AgoraExample extends CallLibrary implements AGEventHandler {
         rootContainer.addView(localVideo);
         worker().preview(true, localVideo, 0);
 
-
         Log.d("amsibsam", "root set");
     }
 
@@ -167,7 +166,8 @@ public class AgoraExample extends CallLibrary implements AGEventHandler {
                 rtcEngine().setupRemoteVideo(new VideoCanvas(remoteVideo, VideoCanvas.RENDER_MODE_HIDDEN, uid));
 
                 rootContainer.removeAllViews();
-
+                smallVideoView.removeAllViews();
+                rootContainer.addView(remoteVideo);
                 smallVideoView.addView(localVideo);
             }
         });
