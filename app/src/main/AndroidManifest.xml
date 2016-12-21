@@ -24,8 +24,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ui.CallActivity" />
-        <activity android:name=".ui.AgoraCallActivity"></activity>
+        <activity android:name=".ui.AgoraCallActivity" />
+        <activity android:name=".ui.SampleCallActivity"></activity>
     </application>
 
 </manifest>

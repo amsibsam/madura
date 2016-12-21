@@ -35,9 +35,9 @@ public class GridVideoViewContainer extends RecyclerView {
         this.mEventListener = listener;
     }
 
-    private boolean initAdapter(int localUid, HashMap<Integer, SoftReference<SurfaceView>> uids) {
+    private boolean initAdapter(Context context, int localUid, HashMap<Integer, SoftReference<SurfaceView>> uids) {
         if (mGridVideoViewContainerAdapter == null) {
-            mGridVideoViewContainerAdapter = new GridVideoViewContainerAdapter(getContext(), localUid, uids, mEventListener);
+            mGridVideoViewContainerAdapter = new GridVideoViewContainerAdapter(context, localUid, uids, mEventListener);
             mGridVideoViewContainerAdapter.setHasStableIds(true);
             return true;
         }
@@ -45,7 +45,7 @@ public class GridVideoViewContainer extends RecyclerView {
     }
 
     public void initViewContainer(Context context, int localUid, HashMap<Integer, SoftReference<SurfaceView>> uids) {
-        boolean newCreated = initAdapter(localUid, uids);
+        boolean newCreated = initAdapter(context, localUid, uids);
 
         if (!newCreated) {
             mGridVideoViewContainerAdapter.setLocalUid(localUid);

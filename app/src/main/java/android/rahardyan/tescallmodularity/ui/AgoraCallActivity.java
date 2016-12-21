@@ -23,7 +23,6 @@ import android.rahardyan.tescallmodularity.headset.IHeadsetPlugListener;
 import android.rahardyan.tescallmodularity.headset.bluetooth.BluetoothHeadsetBroadcastReceiver;
 import android.rahardyan.tescallmodularity.model.Message;
 import android.rahardyan.tescallmodularity.model.User;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -34,7 +33,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SurfaceView;
 import android.view.View;
-import android.view.ViewParent;
 import android.view.ViewStub;
 import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
@@ -145,22 +143,22 @@ public class AgoraCallActivity extends BaseActivity implements AGEventHandler, I
         doConfigEngine(encryptionKey, encryptionMode);
 
         mGridVideoViewContainer = (GridVideoViewContainer) findViewById(R.id.grid_video_view_container);
-        mGridVideoViewContainer.setItemEventHandler((v, item) -> {
-            Log.d("amsibsam", "onItemDoubleClick " + v + " " + item + " " + mLayoutType);
-
-            if (mUidsList.size() < 2) {
-                return;
-            }
-
-            UserStatusData user = (UserStatusData) item;
-            int uid = (user.mUid == 0) ? config().mUid : user.mUid;
-
-            if (mLayoutType == LAYOUT_TYPE_DEFAULT && mUidsList.size() != 1) {
-                switchToSmallVideoView(uid);
-            } else {
-                switchToDefaultVideoView();
-            }
-        });
+//        mGridVideoViewContainer.setItemEventHandler((v, item) -> {
+//            Log.d("amsibsam", "onItemDoubleClick " + v + " " + item + " " + mLayoutType);
+//
+//            if (mUidsList.size() < 2) {
+//                return;
+//            }
+//
+//            UserStatusData user = (UserStatusData) item;
+//            int uid = (user.mUid == 0) ? config().mUid : user.mUid;
+//
+//            if (mLayoutType == LAYOUT_TYPE_DEFAULT && mUidsList.size() != 1) {
+//                switchToSmallVideoView(uid);
+//            } else {
+//                switchToDefaultVideoView();
+//            }
+//        });
 
         SurfaceView surfaceV = RtcEngine.CreateRendererView(getApplicationContext());
         rtcEngine().setupLocalVideo(new VideoCanvas(surfaceV, VideoCanvas.RENDER_MODE_HIDDEN, 0));
@@ -196,25 +194,6 @@ public class AgoraCallActivity extends BaseActivity implements AGEventHandler, I
         findViewById(R.id.bottom_action_container).setVisibility(View.VISIBLE);
     }
 
-    private InChannelMessageListAdapter mMsgAdapter;
-
-    private ArrayList<Message> mMsgList;
-
-
-    private void notifyMessageChanged(Message msg) {
-        mMsgList.add(msg);
-
-        int MAX_MESSAGE_COUNT = 16;
-
-        if (mMsgList.size() > MAX_MESSAGE_COUNT) {
-            int toRemove = mMsgList.size() - MAX_MESSAGE_COUNT;
-            for (int i = 0; i < toRemove; i++) {
-                mMsgList.remove(i);
-            }
-        }
-
-        mMsgAdapter.notifyDataSetChanged();
-    }
 
     private int mDataStreamId;
 
@@ -303,38 +282,6 @@ public class AgoraCallActivity extends BaseActivity implements AGEventHandler, I
         worker().configEngine(vProfile, encryptionKey, encryptionMode);
     }
 
-    private void showMessageEditContainer() {
-        findViewById(R.id.bottom_action_container).setVisibility(View.GONE);
-        findViewById(R.id.bottom_action_end_call).setVisibility(View.GONE);
-        findViewById(R.id.msg_input_container).setVisibility(View.VISIBLE);
-
-        EditText edit = (EditText) findViewById(R.id.msg_content);
-
-        edit.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                if (actionId == EditorInfo.IME_ACTION_SEND
-                        || (event != null && event.getAction() == KeyEvent.ACTION_DOWN && event.getKeyCode() == KeyEvent.KEYCODE_ENTER)) {
-                    String msgStr = v.getText().toString();
-                    if (TextUtils.isEmpty(msgStr)) {
-                        return false;
-                    }
-                    sendChannelMsg(msgStr);
-
-                    v.setText("");
-
-                    Message msg = new Message(Message.MSG_TYPE_TEXT,
-                            new User(config().mUid, String.valueOf(config().mUid)), msgStr);
-                    notifyMessageChanged(msg);
-
-                    return true;
-                }
-                return false;
-            }
-        });
-
-        openIME(edit);
-    }
 
     public void onCustomizedFunctionClicked(View view) {
         Log.i("AgoraCallActvity", "onCustomizedFunctionClicked " + view + " " + mVideoMuted + " " + mAudioMuted);
@@ -649,23 +596,7 @@ public class AgoraCallActivity extends BaseActivity implements AGEventHandler, I
                 }
 
                 break;
-
-            case AGEventHandler.EVENT_TYPE_ON_DATA_CHANNEL_MSG:
-
-                peerUid = (Integer) data[0];
-                final byte[] content = (byte[]) data[1];
-                notifyMessageChanged(new Message(new User(peerUid, String.valueOf(peerUid)), new String(content)));
-
-                break;
-
-            case AGEventHandler.EVENT_TYPE_ON_AGORA_MEDIA_ERROR: {
-                int error = (int) data[0];
-                String description = (String) data[1];
-
-                notifyMessageChanged(new Message(new User(0, null), error + " " + description));
-                break;
             }
-        }
     }
 
     private void requestRemoteStreamType(final int currentHostCount) {

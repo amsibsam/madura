@@ -11,16 +11,7 @@ public class TokboxExample extends CallLibrary {
         this.listener = listener;
     }
 
-    @Override
-    public void startCall() {
-        Log.d("amsibsam", "start calling using tokbox");
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                listener.onAcceptCall("tokBox");
-            }
-        }, 3000);
-    }
+
 
     @Override
     public void endCall() {
