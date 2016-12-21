@@ -7,11 +7,10 @@ import android.rahardyan.tescallmodularity.event.CallEvent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 
 public class SampleCallActivity extends AppCompatActivity implements CallEvent {
-    private RelativeLayout rootContainer;
+    private RelativeLayout rootContainer, smallVideoView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,8 +22,9 @@ public class SampleCallActivity extends AppCompatActivity implements CallEvent {
         final String encryptionMode = getIntent().getStringExtra(ConstantApp.ACTION_KEY_ENCRYPTION_MODE);
 
         rootContainer = (RelativeLayout) findViewById(R.id.root_container);
+        smallVideoView = (RelativeLayout) findViewById(R.id.small_video_container);
         CallLibraryHelper.setListener(this);
-        CallLibraryHelper.setRootLayout(this, rootContainer, encryptionKey, encryptionMode);
+        CallLibraryHelper.setRootLayout(this, rootContainer, smallVideoView, encryptionKey, encryptionMode);
         CallLibraryHelper.startCall(target);
 
         findViewById(R.id.bottom_action_end_call).setOnClickListener(new View.OnClickListener() {
