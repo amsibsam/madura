@@ -69,7 +69,7 @@ public class AgoraExample extends CallLibrary implements AGEventHandler {
     private GridVideoViewContainer mGridVideoViewContainer;
 
 
-    public AgoraExample(Context context) {
+    public AgoraExample (Context context) {
         mContext = context;
         ClassHelper.initWorkerThread(context);
         event().addEventHandler(this);
