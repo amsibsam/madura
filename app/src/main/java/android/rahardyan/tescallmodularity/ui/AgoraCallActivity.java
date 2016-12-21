@@ -145,23 +145,20 @@ public class AgoraCallActivity extends BaseActivity implements AGEventHandler, I
         doConfigEngine(encryptionKey, encryptionMode);
 
         mGridVideoViewContainer = (GridVideoViewContainer) findViewById(R.id.grid_video_view_container);
-        mGridVideoViewContainer.setItemEventHandler(new VideoViewEventListener() {
-            @Override
-            public void onItemDoubleClick(View v, Object item) {
-                Log.d("amsibsam", "onItemDoubleClick " + v + " " + item + " " + mLayoutType);
+        mGridVideoViewContainer.setItemEventHandler((v, item) -> {
+            Log.d("amsibsam", "onItemDoubleClick " + v + " " + item + " " + mLayoutType);
 
-                if (mUidsList.size() < 2) {
-                    return;
-                }
+            if (mUidsList.size() < 2) {
+                return;
+            }
 
-                UserStatusData user = (UserStatusData) item;
-                int uid = (user.mUid == 0) ? config().mUid : user.mUid;
+            UserStatusData user = (UserStatusData) item;
+            int uid = (user.mUid == 0) ? config().mUid : user.mUid;
 
-                if (mLayoutType == LAYOUT_TYPE_DEFAULT && mUidsList.size() != 1) {
-                    switchToSmallVideoView(uid);
-                } else {
-                    switchToDefaultVideoView();
-                }
+            if (mLayoutType == LAYOUT_TYPE_DEFAULT && mUidsList.size() != 1) {
+                switchToSmallVideoView(uid);
+            } else {
+                switchToDefaultVideoView();
             }
         });
 
@@ -187,8 +184,6 @@ public class AgoraCallActivity extends BaseActivity implements AGEventHandler, I
         LinearLayout bottomContainer = (LinearLayout) findViewById(R.id.bottom_container);
         FrameLayout.MarginLayoutParams fmp = (FrameLayout.MarginLayoutParams) bottomContainer.getLayoutParams();
         fmp.bottomMargin = virtualKeyHeight() + 16;
-
-        initMessageList();
     }
 
     public void onClickHideIME(View view) {
@@ -205,16 +200,6 @@ public class AgoraCallActivity extends BaseActivity implements AGEventHandler, I
 
     private ArrayList<Message> mMsgList;
 
-    private void initMessageList() {
-        mMsgList = new ArrayList<>();
-        RecyclerView msgListView = (RecyclerView) findViewById(R.id.msg_list);
-
-        mMsgAdapter = new InChannelMessageListAdapter(this, mMsgList);
-        mMsgAdapter.setHasStableIds(true);
-        msgListView.setAdapter(mMsgAdapter);
-        msgListView.setLayoutManager(new LinearLayoutManager(this, RecyclerView.VERTICAL, false));
-        msgListView.addItemDecoration(new MessageListDecoration());
-    }
 
     private void notifyMessageChanged(Message msg) {
         mMsgList.add(msg);
@@ -318,11 +303,6 @@ public class AgoraCallActivity extends BaseActivity implements AGEventHandler, I
         worker().configEngine(vProfile, encryptionKey, encryptionMode);
     }
 
-    public void onBtn0Clicked(View view) {
-        Log.i("AgoraCallActivity", "onBtn0Clicked " + view + " " + mVideoMuted + " " + mAudioMuted);
-        showMessageEditContainer();
-    }
-
     private void showMessageEditContainer() {
         findViewById(R.id.bottom_action_container).setVisibility(View.GONE);
         findViewById(R.id.bottom_action_end_call).setVisibility(View.GONE);
@@ -419,34 +399,7 @@ public class AgoraCallActivity extends BaseActivity implements AGEventHandler, I
         finish();
     }
 
-    public void onVoiceChatClicked(View view) {
-        Log.i("AgoraCallActivity", "onVoiceChatClicked " + view + " " + mUidsList.size() + " video_status: " + mVideoMuted + " audio_status: " + mAudioMuted);
-        if (mUidsList.size() == 0) {
-            return;
-        }
 
-        SurfaceView surfaceV = getLocalView();
-        ViewParent parent;
-        if (surfaceV == null || (parent = surfaceV.getParent()) == null) {
-            Log.w("AgoraCallActivity", "onVoiceChatClicked " + view + " " + surfaceV);
-            return;
-        }
-
-        RtcEngine rtcEngine = rtcEngine();
-        rtcEngine.muteLocalVideoStream(mVideoMuted = !mVideoMuted);
-
-        ImageView iv = (ImageView) view;
-
-        iv.setImageResource(mVideoMuted ? R.drawable.btn_video : R.drawable.btn_voice);
-
-        hideLocalView(mVideoMuted);
-
-        if (mVideoMuted) {
-            resetEarpiece();
-        } else {
-            resetCamera();
-        }
-    }
 
     private SurfaceView getLocalView() {
         for (HashMap.Entry<Integer, SoftReference<SurfaceView>> entry : mUidsList.entrySet()) {
