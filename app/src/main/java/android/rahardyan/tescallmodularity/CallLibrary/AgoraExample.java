@@ -37,6 +37,8 @@ public class AgoraExample extends CallLibrary implements AGEventHandler {
     SurfaceView localVideo;
     SurfaceView remoteVideo;
 
+    private RtcEngine mRtcEngine;
+
     private volatile boolean mAudioMuted = false;
 
     public int mLayoutType = LAYOUT_TYPE_DEFAULT;
@@ -46,11 +48,12 @@ public class AgoraExample extends CallLibrary implements AGEventHandler {
     public AgoraExample (Context context) {
         mContext = context;
         Madura.initWorkerThread(context);
-        event().addEventHandler(this);
+        mRtcEngine = worker().getRtcEngine();
     }
 
     public void setListener(CallEvent listener){
         this.listener = listener;
+        event().addEventHandler(this);
     }
 
     public void setRootContainer(Activity activity, RelativeLayout container, RelativeLayout smallVideo, String encryptionKey, String encryptionMode){
@@ -59,8 +62,8 @@ public class AgoraExample extends CallLibrary implements AGEventHandler {
         rootContainer = container;
         smallVideoView = smallVideo;
 
-        localVideo = RtcEngine.CreateRendererView(mContext);
-        rtcEngine().setupLocalVideo(new VideoCanvas(localVideo, VideoCanvas.RENDER_MODE_HIDDEN, 0));
+        localVideo = mRtcEngine.CreateRendererView(mContext);
+        mRtcEngine.setupLocalVideo(new VideoCanvas(localVideo, VideoCanvas.RENDER_MODE_HIDDEN, 0));
         localVideo.setZOrderOnTop(true);
         localVideo.setZOrderMediaOverlay(true);
 
@@ -73,10 +76,6 @@ public class AgoraExample extends CallLibrary implements AGEventHandler {
     private void doConfigEngine(String encryptionKey, String encryptionMode) {
         int vProfile = ConstantApp.VIDEO_PROFILES[getVideoProfileIndex()];
         worker().configEngine(vProfile, encryptionKey, encryptionMode);
-    }
-
-    public RtcEngine rtcEngine() {
-        return Madura.getWorkerThread().getRtcEngine();
     }
 
     public final WorkerThread worker() {
@@ -99,13 +98,12 @@ public class AgoraExample extends CallLibrary implements AGEventHandler {
 
     @Override
     public void endCall() {
-        worker().leaveChannel(mTarget);
-//        worker().preview(false, null, 0);
-        listener.onEndCall("agora");
+        leaveChannel();
     }
 
     @Override
     public void onFirstRemoteVideoDecoded(int uid, int width, int height, int elapsed) {
+        Log.d("amsibsam", "remote video agexample "+uid);
         doRenderRemoteUi(uid);
         listener.onConversationStart();
     }
@@ -122,13 +120,11 @@ public class AgoraExample extends CallLibrary implements AGEventHandler {
                     return;
                 }
 
-                remoteVideo = RtcEngine.CreateRendererView(mActivity);
-                mUidsList.put(uid, new SoftReference<>(remoteVideo));
-
+                remoteVideo = mRtcEngine.CreateRendererView(mActivity);
                 remoteVideo.setZOrderOnTop(false);
                 remoteVideo.setZOrderMediaOverlay(false);
 
-                rtcEngine().setupRemoteVideo(new VideoCanvas(remoteVideo, VideoCanvas.RENDER_MODE_HIDDEN, uid));
+                mRtcEngine.setupRemoteVideo(new VideoCanvas(remoteVideo, VideoCanvas.RENDER_MODE_HIDDEN, uid));
 
                 rootContainer.removeAllViews();
                 smallVideoView.removeAllViews();
@@ -145,12 +141,12 @@ public class AgoraExample extends CallLibrary implements AGEventHandler {
             return;
         }
 
-        RtcEngine rtcEngine = rtcEngine();
+        RtcEngine rtcEngine = mRtcEngine;
         rtcEngine.muteLocalAudioStream(mAudioMuted = !mAudioMuted);
     }
 
     public void onSwitchCameraClicked() {
-        RtcEngine rtcEngine = rtcEngine();
+        RtcEngine rtcEngine = mRtcEngine;
         rtcEngine.switchCamera();
     }
 
@@ -170,9 +166,9 @@ public class AgoraExample extends CallLibrary implements AGEventHandler {
 
         mUidsList.put(uid, local);
 
-        rtcEngine().muteLocalAudioStream(mAudioMuted);
+        mRtcEngine.muteLocalAudioStream(mAudioMuted);
 
-        worker().getRtcEngine().setEnableSpeakerphone(true);
+        mRtcEngine.setEnableSpeakerphone(true);
 
         listener.onConversationStart();
     }
@@ -180,6 +176,13 @@ public class AgoraExample extends CallLibrary implements AGEventHandler {
     @Override
     public void onUserOffline(int uid, int reason) {
         listener.onConversationEnd();
+        leaveChannel();
+    }
+
+    private void leaveChannel(){
+        event().removeEventHandler(this);
+        worker().leaveChannel(mTarget);
+        worker().preview(false, null, 0);
     }
 
     @Override

@@ -31,6 +31,7 @@ public class SampleCallActivity extends AppCompatActivity implements CallEvent {
             @Override
             public void onClick(View v) {
                 Madura.endCall();
+                finish();
             }
         });
 
@@ -56,7 +57,7 @@ public class SampleCallActivity extends AppCompatActivity implements CallEvent {
 
     @Override
     public void onEndCall(String lib) {
-        finish();
+
     }
 
     @Override

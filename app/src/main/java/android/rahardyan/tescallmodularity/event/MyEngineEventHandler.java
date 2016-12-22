@@ -37,6 +37,7 @@ public class MyEngineEventHandler {
         @Override
         public void onFirstRemoteVideoDecoded(int uid, int width, int height, int elapsed) {
             Log.d("MyEngineEventHandler", "onFirstRemoteVideoDecoded " + (uid & 0xFFFFFFFFL) + " " + width + " " + height + " " + elapsed);
+            Log.d("amsibsam", "remote video myengine");
 
             Iterator<AGEventHandler> it = mEventHandlerList.keySet().iterator();
             while (it.hasNext()) {
