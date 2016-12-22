@@ -32,7 +32,6 @@ public class AgoraExample extends CallLibrary implements AGEventHandler {
     private CallEvent listener;
     private Context mContext;
     private String mTarget;
-    private final HashMap<Integer, SoftReference<SurfaceView>> mUidsList = new HashMap<>();
     private Activity mActivity;
     SurfaceView localVideo;
     SurfaceView remoteVideo;
@@ -41,7 +40,6 @@ public class AgoraExample extends CallLibrary implements AGEventHandler {
 
     private volatile boolean mAudioMuted = false;
 
-    public int mLayoutType = LAYOUT_TYPE_DEFAULT;
     public static final int LAYOUT_TYPE_DEFAULT = 0;
 
 
@@ -116,10 +114,6 @@ public class AgoraExample extends CallLibrary implements AGEventHandler {
                     return;
                 }
 
-                if (mUidsList.containsKey(uid)) {
-                    return;
-                }
-
                 remoteVideo = mRtcEngine.CreateRendererView(mActivity);
                 remoteVideo.setZOrderOnTop(false);
                 remoteVideo.setZOrderMediaOverlay(false);
@@ -136,11 +130,6 @@ public class AgoraExample extends CallLibrary implements AGEventHandler {
     }
 
     public void muteAudio() {
-        Log.i("AgoraCallActivity", " " + mUidsList.size()  + " audio_status: " + mAudioMuted);
-        if (mUidsList.size() == 0) {
-            return;
-        }
-
         RtcEngine rtcEngine = mRtcEngine;
         rtcEngine.muteLocalAudioStream(mAudioMuted = !mAudioMuted);
     }
@@ -151,26 +140,14 @@ public class AgoraExample extends CallLibrary implements AGEventHandler {
     }
 
 
-    private void requestRemoteStreamType(final int currentHostCount) {
-        Log.d("amsibsam", "requestRemoteStreamType " + currentHostCount);
-    }
 
     @Override
     public void onJoinChannelSuccess(String channel, int uid, int elapsed) {
         Log.d("Example", "onJoinChannelSuccess " + channel + " " + (uid & 0xFFFFFFFFL) + " " + elapsed);
-        SoftReference<SurfaceView> local = mUidsList.remove(0);
-
-        if (local == null) {
-            return;
-        }
-
-        mUidsList.put(uid, local);
 
         mRtcEngine.muteLocalAudioStream(mAudioMuted);
 
         mRtcEngine.setEnableSpeakerphone(true);
-
-        listener.onConversationStart();
     }
 
     @Override

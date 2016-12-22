@@ -5,8 +5,6 @@ package android.rahardyan.tescallmodularity.event;
  */
 
 public interface CallEvent {
-    void onAcceptCall(String lib);
-    void onEndCall(String lib);
     void onConversationStart();
     void onConversationEnd();
     void onCallFailed();

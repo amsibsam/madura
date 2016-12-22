@@ -1,36 +1,81 @@
 package android.rahardyan.tescallmodularity.ui.halodoc;
 
+import android.os.Handler;
 import android.rahardyan.tescallmodularity.Madura;
 import android.rahardyan.tescallmodularity.AgoraSampleReferences.model.ConstantApp;
 import android.rahardyan.tescallmodularity.R;
 import android.rahardyan.tescallmodularity.event.CallEvent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.ButtonBarLayout;
+import android.text.format.DateUtils;
+import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 public class SampleCallActivity extends AppCompatActivity implements CallEvent {
     private RelativeLayout rootContainer, smallVideoView;
+    private TextView callDuration;
+    private boolean shouldContinueTimer = false;
+    private long callDurationInSeconds;
+    private long startTime;
+    final Handler handler = new Handler();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sample_call);
+        targetView(); //target xml view
+        initMaduraSdk(); //init madura
+        setButtonResponse(); //set button onclick
+    }
 
+    @Override
+    public void onConversationStart() {
+        Log.d("amsibsam", "conversation start");
+        startTime = System.currentTimeMillis();
+        startTimer();
+//        TODO: do something when conversation start
+    }
+
+    @Override
+    public void onConversationEnd() {
+        finish();
+        shouldContinueTimer = false;
+    }
+
+    @Override
+    public void onCallFailed() {
+//        TODO: notify user (callback not implemented yet)
+    }
+
+    private void targetView(){
+        rootContainer = (RelativeLayout) findViewById(R.id.root_container);
+        smallVideoView = (RelativeLayout) findViewById(R.id.small_video_container);
+        callDuration = (TextView) findViewById(R.id.tv_duration);
+    }
+
+    private void initMaduraSdk(){
         String target = getIntent().getStringExtra(ConstantApp.ACTION_KEY_CHANNEL_NAME);
         final String encryptionKey = getIntent().getStringExtra(ConstantApp.ACTION_KEY_ENCRYPTION_KEY);
         final String encryptionMode = getIntent().getStringExtra(ConstantApp.ACTION_KEY_ENCRYPTION_MODE);
 
-        rootContainer = (RelativeLayout) findViewById(R.id.root_container);
-        smallVideoView = (RelativeLayout) findViewById(R.id.small_video_container);
-        Madura.setListener(this);
-        Madura.setRootLayout(this, rootContainer, smallVideoView, encryptionKey, encryptionMode);
-        Madura.startCall(target);
+        Madura.setListener(this); //set call listener
 
+        Madura.setRootLayout(this, rootContainer, smallVideoView,
+                encryptionKey, encryptionMode); //set video render view
+
+        Madura.startCall(target); //start call
+    }
+
+    private void setButtonResponse(){
         findViewById(R.id.bottom_action_end_call).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Madura.endCall();
+                shouldContinueTimer = false;
                 finish();
             }
         });
@@ -50,29 +95,20 @@ public class SampleCallActivity extends AppCompatActivity implements CallEvent {
         });
     }
 
-    @Override
-    public void onAcceptCall(String lib) {
-
-    }
-
-    @Override
-    public void onEndCall(String lib) {
-
-    }
-
-    @Override
-    public void onConversationStart() {
-//        TODO: start timer
-    }
-
-    @Override
-    public void onConversationEnd() {
-        finish();
-//        TODO: stop timer (callback not implemented yet)
-    }
-
-    @Override
-    public void onCallFailed() {
-//        TODO: notify user (callback not implemented yet)
+    private void startTimer(){
+        Log.d("amsibsam", "start timer");
+        shouldContinueTimer = true;
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                long currentTime = System.currentTimeMillis();
+                callDurationInSeconds = (currentTime - startTime) / 1000L;
+                String formattedDuration = DateUtils.formatElapsedTime(callDurationInSeconds);
+                callDuration.setText(formattedDuration);
+                if (shouldContinueTimer) {
+                    handler.postDelayed(this, 1000L);
+                }
+            }
+        }, 1000L);
     }
 }
