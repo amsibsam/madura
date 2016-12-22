@@ -106,6 +106,7 @@ public class AgoraExample extends CallLibrary implements AGEventHandler {
     @Override
     public void onFirstRemoteVideoDecoded(int uid, int width, int height, int elapsed) {
         doRenderRemoteUi(uid);
+        listener.onConversationStart();
     }
 
     private void doRenderRemoteUi(final int uid) {
@@ -172,7 +173,7 @@ public class AgoraExample extends CallLibrary implements AGEventHandler {
 
     @Override
     public void onUserOffline(int uid, int reason) {
-        doRenderRemoteUi(uid);
+        listener.onConversationEnd();
     }
 
     @Override

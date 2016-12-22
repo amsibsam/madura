@@ -54,16 +54,17 @@ public class SampleCallActivity extends AppCompatActivity implements CallEvent {
 
     @Override
     public void onConversationStart() {
-
+//        TODO: start timer
     }
 
     @Override
     public void onConversationEnd() {
-
+        finish();
+//        TODO: stop timer (callback not implemented yet)
     }
 
     @Override
     public void onCallFailed() {
-
+//        TODO: notify user (callback not implemented yet)
     }
 }
