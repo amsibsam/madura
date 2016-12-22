@@ -100,6 +100,7 @@ public class AgoraExample extends CallLibrary implements AGEventHandler {
     @Override
     public void endCall() {
         worker().leaveChannel(mTarget);
+//        worker().preview(false, null, 0);
         listener.onEndCall("agora");
     }
 
@@ -145,6 +146,11 @@ public class AgoraExample extends CallLibrary implements AGEventHandler {
 
         RtcEngine rtcEngine = rtcEngine();
         rtcEngine.muteLocalAudioStream(mAudioMuted = !mAudioMuted);
+    }
+
+    public void onSwitchCameraClicked() {
+        RtcEngine rtcEngine = rtcEngine();
+        rtcEngine.switchCamera();
     }
 
 

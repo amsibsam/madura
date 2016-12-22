@@ -40,6 +40,13 @@ public class SampleCallActivity extends AppCompatActivity implements CallEvent {
                 Madura.muteAudio();
             }
         });
+
+        findViewById(R.id.customized_function_id).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Madura.swithcCamera();
+            }
+        });
     }
 
     @Override

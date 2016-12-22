@@ -42,6 +42,10 @@ public class Madura {
         callLibrary.muteAudio();
     }
 
+    public static void swithcCamera(){
+        callLibrary.onSwitchCameraClicked();
+    }
+
     public static synchronized void initWorkerThread(Context context) {
         if (mWorkerThread == null) {
             mWorkerThread = new WorkerThread(context);
