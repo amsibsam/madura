@@ -1,5 +1,6 @@
 package android.rahardyan.tescallmodularity.ui.halodoc;
 
+import android.graphics.PorterDuff;
 import android.os.Handler;
 import android.rahardyan.tescallmodularity.Madura;
 import android.rahardyan.tescallmodularity.AgoraSampleReferences.model.ConstantApp;
@@ -12,16 +13,19 @@ import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 public class SampleCallActivity extends AppCompatActivity implements CallEvent {
     private RelativeLayout rootContainer, smallVideoView;
     private TextView callDuration;
+    private ImageView btnMute;
     private boolean shouldContinueTimer = false;
     private long callDurationInSeconds;
     private long startTime;
     final Handler handler = new Handler();
+    private boolean mAudioMuted = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,13 +55,14 @@ public class SampleCallActivity extends AppCompatActivity implements CallEvent {
 //        TODO: notify user (callback not implemented yet)
     }
 
-    private void targetView(){
+    private void targetView() {
         rootContainer = (RelativeLayout) findViewById(R.id.root_container);
         smallVideoView = (RelativeLayout) findViewById(R.id.small_video_container);
         callDuration = (TextView) findViewById(R.id.tv_duration);
+        btnMute = (ImageView) findViewById(R.id.btn_mute);
     }
 
-    private void initMaduraSdk(){
+    private void initMaduraSdk() {
         String target = getIntent().getStringExtra(ConstantApp.ACTION_KEY_CHANNEL_NAME);
         final String encryptionKey = getIntent().getStringExtra(ConstantApp.ACTION_KEY_ENCRYPTION_KEY);
         final String encryptionMode = getIntent().getStringExtra(ConstantApp.ACTION_KEY_ENCRYPTION_MODE);
@@ -70,7 +75,7 @@ public class SampleCallActivity extends AppCompatActivity implements CallEvent {
         Madura.startCall(target); //start call
     }
 
-    private void setButtonResponse(){
+    private void setButtonResponse() {
         findViewById(R.id.bottom_action_end_call).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -80,10 +85,18 @@ public class SampleCallActivity extends AppCompatActivity implements CallEvent {
             }
         });
 
-        findViewById(R.id.btn_mute).setOnClickListener(new View.OnClickListener() {
+        btnMute.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Madura.muteAudio();
+
+                if (mAudioMuted) {
+                    btnMute.clearColorFilter();
+                    mAudioMuted = false;
+                } else {
+                    mAudioMuted = true;
+                    btnMute.setColorFilter(getResources().getColor(R.color.agora_blue), PorterDuff.Mode.MULTIPLY);
+                }
             }
         });
 
@@ -95,7 +108,7 @@ public class SampleCallActivity extends AppCompatActivity implements CallEvent {
         });
     }
 
-    private void startTimer(){
+    private void startTimer() {
         Log.d("amsibsam", "start timer");
         shouldContinueTimer = true;
         handler.postDelayed(new Runnable() {
